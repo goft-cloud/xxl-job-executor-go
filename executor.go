@@ -14,6 +14,11 @@ import (
 	"time"
 )
 
+const (
+	glueTypeShell = "GLUE_SHELL"
+	shellTaskHandler = "task.shell"
+)
+
 // Executor 执行器
 type Executor interface {
 	// Init 初始化
@@ -128,7 +133,7 @@ func (e *executor) runTask(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	e.log.Info("任务参数:%v", param)
-	if !e.regList.Exists(param.ExecutorHandler) {
+	if param.GlueType != glueTypeShell && !e.regList.Exists(param.ExecutorHandler) {
 		_, _ = writer.Write(returnCall(param, 500, "Task not registered"))
 		e.log.Error("任务[" + Int64ToStr(param.JobID) + "]没有注册:" + param.ExecutorHandler)
 		return
@@ -150,7 +155,13 @@ func (e *executor) runTask(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	cxt := context.Background()
-	task := e.regList.Get(param.ExecutorHandler)
+
+	taskName :=param.ExecutorHandler
+	if param.GlueType == glueTypeShell {
+		taskName = shellTaskHandler
+	}
+
+	task := e.regList.Get(taskName)
 	if param.ExecutorTimeout > 0 {
 		task.Ext, task.Cancel = context.WithTimeout(cxt, time.Duration(param.ExecutorTimeout)*time.Second)
 	} else {
