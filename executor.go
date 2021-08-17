@@ -218,7 +218,7 @@ func (e *executor) taskLog(writer http.ResponseWriter, request *http.Request) {
 	if e.logHandler != nil {
 		res = e.logHandler(req)
 	} else {
-		res = defaultLogHandler(req)
+		res = defaultLogHandler(e.log, req)
 	}
 	str, _ := json.Marshal(res)
 	_, _ = writer.Write(str)

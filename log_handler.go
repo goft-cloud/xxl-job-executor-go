@@ -12,7 +12,8 @@ import (
 type LogHandler func(req *LogReq) *LogRes
 
 //默认返回
-func defaultLogHandler(req *LogReq) *LogRes {
+func defaultLogHandler(log Logger, req *LogReq) *LogRes {
+
 	return &LogRes{Code: 200, Msg: "", Content: LogResContent{
 		FromLineNum: req.FromLineNum,
 		ToLineNum:   2,

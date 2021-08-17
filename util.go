@@ -2,6 +2,8 @@ package xxl
 
 import (
 	"encoding/json"
+	"log"
+	"os"
 	"strconv"
 )
 
@@ -64,4 +66,21 @@ func returnGeneral() []byte {
 	}
 	str, _ := json.Marshal(data)
 	return str
+}
+
+func IsDir(fileAddr string) bool {
+	s, err := os.Stat(fileAddr)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return s.IsDir()
+}
+
+func CreateDir(dirName string) bool {
+	err := os.Mkdir(dirName, 0777)
+	if err != nil {
+		return false
+	}
+	return true
 }
