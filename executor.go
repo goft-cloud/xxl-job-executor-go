@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	glueTypeShell = "GLUE_SHELL"
+	glueTypeShell    = "GLUE_SHELL"
 	shellTaskHandler = "task.shell"
 )
 
@@ -156,7 +156,7 @@ func (e *executor) runTask(writer http.ResponseWriter, request *http.Request) {
 
 	cxt := context.Background()
 
-	taskName :=param.ExecutorHandler
+	taskName := param.ExecutorHandler
 	if param.GlueType == glueTypeShell {
 		taskName = shellTaskHandler
 	}
@@ -218,7 +218,7 @@ func (e *executor) taskLog(writer http.ResponseWriter, request *http.Request) {
 	if e.logHandler != nil {
 		res = e.logHandler(req)
 	} else {
-		res = defaultLogHandler(e.log, req)
+		res = e.log.ReadLog(req)
 	}
 	str, _ := json.Marshal(res)
 	_, _ = writer.Write(str)

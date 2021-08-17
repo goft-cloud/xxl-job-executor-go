@@ -16,6 +16,7 @@ type Logger interface {
 	InfoJob(jobId int64, format string, a ...interface{})
 	Error(format string, a ...interface{})
 	ErrorJob(jobId int64, format string, a ...interface{})
+	ReadLog(req *LogReq) *LogRes
 }
 
 func NewDefaultLogger() *DefaultLogger {
@@ -37,6 +38,14 @@ func (l *DefaultLogger) Init() {
 	}
 }
 
+func (l *DefaultLogger) ReadLog(req *LogReq) *LogRes {
+	return &LogRes{Code: 200, Msg: "", Content: LogResContent{
+		FromLineNum: req.FromLineNum,
+		ToLineNum:   2,
+		LogContent:  "这是日志默认返回，说明没有设置LogHandler",
+		IsEnd:       true,
+	}}
+}
 func (l *DefaultLogger) Info(format string, a ...interface{}) {
 	fmt.Println(fmt.Sprintf(format, a...))
 }
