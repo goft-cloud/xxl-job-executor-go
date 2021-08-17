@@ -1,4 +1,4 @@
-module github.com/goft-cloud/xxl-job-executor-go
+module github.com/goft-cloud/xxl-job-executor-go/v2
 
 go 1.14
 
