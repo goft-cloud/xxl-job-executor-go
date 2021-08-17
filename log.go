@@ -1,6 +1,7 @@
 package xxl
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -39,15 +40,44 @@ func (l *DefaultLogger) Init() {
 }
 
 func (l *DefaultLogger) ReadLog(req *LogReq) *LogRes {
+	logPath := fmt.Sprintf("%s/%d.log", l.Path, req.LogID)
+	context, toLineNum, end := l.readFromLine(req.FromLineNum, DefaultLogPageSize, logPath)
+
 	return &LogRes{Code: 200, Msg: "", Content: LogResContent{
 		FromLineNum: req.FromLineNum,
-		ToLineNum:   2,
-		LogContent:  "这是日志默认返回，说明没有设置LogHandler",
-		IsEnd:       true,
+		ToLineNum:   toLineNum,
+		LogContent:  context,
+		IsEnd:       end,
 	}}
 }
+
+func (l *DefaultLogger) readFromLine(start, size int, fileName string) (string, int, bool) {
+	file, _ := os.Open(fileName)
+	fileScanner := bufio.NewScanner(file)
+	lineCount := 1
+	message := ""
+	for fileScanner.Scan() {
+		lineCount++
+		if lineCount < start {
+			continue
+		}
+
+		oneLine := fileScanner.Text()
+		message += oneLine + "\n"
+		if oneLine == TaskLogEnd {
+			return message, lineCount, true
+		}
+
+		if start+size < lineCount {
+			break
+		}
+	}
+
+	defer file.Close()
+	return message, lineCount, false
+}
 func (l *DefaultLogger) Info(format string, a ...interface{}) {
-	fmt.Println(fmt.Sprintf(format, a...))
+	//fmt.Println(fmt.Sprintf(format, a...))
 }
 
 func (l *DefaultLogger) Error(format string, a ...interface{}) {

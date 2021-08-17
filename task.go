@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os/exec"
 	"runtime/debug"
+	"time"
 )
 
 // TaskFunc 任务执行函数
@@ -81,6 +82,7 @@ func (st *ShellTask) Shell(cxt context.Context, param *RunReq) (msg string) {
 		return "脚本执行失败 file=" + shellPath + " err=" + err2.Error()
 	}
 
+	time.Sleep(20*time.Second)
 	st.Log.InfoJob(jobId, "脚本执行成功")
 	st.Log.InfoJob(jobId, string(data))
 	return
